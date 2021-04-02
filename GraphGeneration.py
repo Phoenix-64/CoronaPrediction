@@ -31,29 +31,22 @@ def filtering(data, dates, file_range):
 
     return current
 
-def fitting(cases, time):
-    # Here is the Function that should be fitted: y = a*x^b
-    # then we take the Natural log of both sides:  ln(y) = ln(a) + b*ln(x)
-    # this is now a linear Equation with slope ln(a) and intercept b
-    # on which we do box least square fitting
-    #
-    a_top = []
-    a_bottom = []
-    a1 = 0
-    b = 0
-    cases_mean = np.mean(cases)
-    time_mean = time / 2
+def generat_graph(y_data, sel, exc):
 
-    for i in range(0, len(cases)):
-        a_top.extend((i + time_mean) * (cases[i] + cases_mean))
-        a_bottom.extend(cases[i])
+    for i in exc:
+        if i in sel:
+            print(i)
+            y_data[sel.index(i)] = None
 
-    # y_new =
+    fig = go.Figure(data=go.Scatter(y=y_data, x=sel, connectgaps=True))
+    fig.show()
+
+
 
 
 
 selection = []
-# Dates to be excluded:
+
 exclude = ["03.10.2020", "04.10.2020", "10.10.2020", "11.10.2020", "17.10.2020", "18.10.2020", "04.10.2020",
            "24.10.2020", "25.10.2020", "27.10.2020", "28.10.2020", "29.10.2020", "30.10.2020", ]
 
@@ -64,14 +57,39 @@ for i in range(1, 31):
     else:
         selection.append(str(i) + ".10.2020")
 
+
 read = read_files("200325_Datengrundlage_Grafiken_COVID-19-Bericht.csv")
+y0 = filtering(read, selection, 400)
+
+generat_graph(y0, selection, exclude)
+
+
 y = filtering(read, selection, 400)
+#Makes my curve striagth
+for i in y:
+    y[y.index(i)] = np.log(i)
 
-# Removes dates that should be excluded:
-for i in exclude:
-    if i in selection:
-        y[selection.index(i)] = None
+generat_graph(y, selection, exclude)
 
-# Graphing
-fig = go.Figure(data=go.Scatter(y=y, x=selection, connectgaps=True))
-fig.show()
+
+
+
+
+
+
+
+
+
+
+
+y = filtering(read, selection, 400)
+for i in y:
+    y[y.index(i)] = np.log(i)
+
+for i in y:
+    y[y.index(i)] = pow(np.e, i)
+
+generat_graph(y, selection, exclude)
+
+
+
