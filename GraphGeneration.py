@@ -1,6 +1,7 @@
 import csv
 import plotly.graph_objects as go
 import numpy as np
+import pandas as pd
 
 """read_files reads the csv file and stores it as a list"""
 
@@ -31,13 +32,7 @@ def filtering(data, dates, file_range):
 
     return current
 
-def generat_graph(y_data, sel, exc):
-
-    for i in exc:
-        if i in sel:
-            print(i)
-            y_data[sel.index(i)] = None
-
+def generat_graph(y_data, sel):
     fig = go.Figure(data=go.Scatter(y=y_data, x=sel, connectgaps=True))
     fig.show()
 
@@ -48,48 +43,68 @@ def generat_graph(y_data, sel, exc):
 selection = []
 
 exclude = ["03.10.2020", "04.10.2020", "10.10.2020", "11.10.2020", "17.10.2020", "18.10.2020", "04.10.2020",
-           "24.10.2020", "25.10.2020", "27.10.2020", "28.10.2020", "29.10.2020", "30.10.2020", ]
+           "24.10.2020", "25.10.2020"]
 
 # Generating Dates I want:
-for i in range(1, 31):
+for i in range(1, 27):
     if i < 10:
         selection.append("0" + str(i) + ".10.2020")
     else:
         selection.append(str(i) + ".10.2020")
-
+df_x = pd.Series(selection)
 
 read = read_files("200325_Datengrundlage_Grafiken_COVID-19-Bericht.csv")
-y0 = filtering(read, selection, 400)
-
-generat_graph(y0, selection, exclude)
-
-
 y = filtering(read, selection, 400)
+
+df_y = pd.Series(y)
+remove = []
+#generat_graph(y0, selection, exclude)
+for i in exclude:
+    if i in selection:
+        print(i)
+        remove.append(selection.index(i))
+
+df_y = df_y.drop(remove)
+df_x = df_x.drop(remove)
+
+
 #Makes my curve striagth
-for i in y:
-    y[y.index(i)] = np.log(i)
-
-generat_graph(y, selection, exclude)
+df_y_log = np.log(df_y)
 
 
+x_mean = len(df_y) / 2
+y_mean = np.mean(df_y_log)
+a_top = []
+a_bottom = []
+for index, value in df_y_log.items():
+    a_top.append((index - x_mean) * (value - y_mean))
+    a_bottom.append((index - x_mean) ** 2)
+
+
+a1 = sum(a_top) / sum(a_bottom)
+a0 = y_mean - a1 * x_mean
+
+y1 = []
+x1 = []
+for i in range(len(df_y_log)):
+    y1.append(a1*i+a0)
+    x1.append(i)
+
+print(y1)
+y_normal = []
+for i in y1:
+    y_normal.append(np.e**i)
+
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(y=df_y, x=df_x))
+fig.add_trace(go.Scatter(y=y1, x=x1))
+fig.add_trace(go.Scatter(y=y_normal, x=x1))
+fig.show()
 
 
 
-
-
-
-
-
-
-
-y = filtering(read, selection, 400)
-for i in y:
-    y[y.index(i)] = np.log(i)
-
-for i in y:
-    y[y.index(i)] = pow(np.e, i)
-
-generat_graph(y, selection, exclude)
+#generat_graph(y1, x1)
 
 
 
