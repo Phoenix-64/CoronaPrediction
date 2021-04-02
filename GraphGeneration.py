@@ -1,6 +1,7 @@
 import csv
-import plotly.graph_objects as go
+import pandas as pd
 import numpy as np
+import fitting
 
 """read_files reads the csv file and stores it as a list"""
 
@@ -16,45 +17,45 @@ as well as a range which it should read from the raw data. Then it separates the
 into there own lists. """
 
 
-def filtering(data, dates, file_range):
+def filtering(data, dates):
     date_ranged = []
     current = []
-    for i in range(7, file_range):
+    for i in range(7, len(data)):
         date_ranged.append(data[i])
 
     for i in date_ranged:
         separated = i[0].split(";")
-        for x in dates:
-            if separated[0] == x:
+        for index, row in dates.iterrows():
+            if separated[0] == row[0]:
                 current.append(int(separated[1]))
-        date_ranged[date_ranged.index(i)] = separated
+    dates["Cases"] = current
 
-    return current
-
-
+    return dates
 
 
+def generate_dates(starting, length):
+    remove = []
+    dates_raw = pd.date_range(start=starting, periods=length)
+    dates_filtered = dates_raw.strftime('%d.%m.%Y')
+    date_series = pd.DataFrame(dates_filtered)
 
-selection = []
-# Dates to be excluded:
-exclude = ["03.10.2020", "04.10.2020", "10.10.2020", "11.10.2020", "17.10.2020", "18.10.2020", "04.10.2020",
-           "24.10.2020", "25.10.2020", "27.10.2020", "28.10.2020", "29.10.2020", "30.10.2020", ]
+    for i in dates_raw:
+        if i.dayofweek == 5 or i.dayofweek == 6:
+            remove.append(np.where(dates_raw == i)[0].item())
+    date_series = date_series.drop(remove)
 
-# Generating Dates I want:
-for i in range(1, 31):
-    if i < 10:
-        selection.append("0" + str(i) + ".10.2020")
-    else:
-        selection.append(str(i) + ".10.2020")
+    return date_series
+
+
+
 
 read = read_files("200325_Datengrundlage_Grafiken_COVID-19-Bericht.csv")
-y = filtering(read, selection, 400)
 
-# Removes dates that should be excluded:
-for i in exclude:
-    if i in selection:
-        y[selection.index(i)] = None
+dates = generate_dates("26-09-2020", 20)
+data = filtering(read, dates)
 
-# Graphing
-fig = go.Figure(data=go.Scatter(y=y, x=selection, connectgaps=True))
-fig.show()
+fitting.plot(data)
+
+
+
+
