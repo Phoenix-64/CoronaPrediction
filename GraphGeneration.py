@@ -31,7 +31,24 @@ def filtering(data, dates, file_range):
 
     return current
 
+def fitting(cases, time):
+    # Here is the Function that should be fitted: y = a*x^b
+    # then we take the Natural log of both sides:  ln(y) = ln(a) + b*ln(x)
+    # this is now a linear Equation with slope ln(a) and intercept b
+    # on which we do box least square fitting
+    #
+    a_top = []
+    a_bottom = []
+    a1 = 0
+    b = 0
+    cases_mean = np.mean(cases)
+    time_mean = time / 2
 
+    for i in range(0, len(cases)):
+        a_top.extend((i + time_mean) * (cases[i] + cases_mean))
+        a_bottom.extend(cases[i])
+
+    # y_new =
 
 
 
