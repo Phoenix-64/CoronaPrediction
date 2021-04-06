@@ -1,0 +1,70 @@
+\documentclass {article}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{verbatim}
+\usepackage{graphicx}
+
+
+\title {Corona number Prediciton}
+\author {Benjamin Pionczewski}
+\date {\today {}}
+
+
+\begin {document}
+\maketitle
+\section {Modle}
+
+The prediction is made by fitting an exponential curve ($N_{(t)} = N_0*e^{kt}$) to a dataset.
+
+For the fitting, the data is converted to a linear scale by taking the ln of the $y$ axis:
+\[\omega_i = \ln(y_i)\]
+
+\lstinputlisting[language=Python, firstline=11, lastline=13]{D:/Programming/CoronaPrediction/fitting.py}
+
+And then the least square method is used to compute values $a$ and $b$ to fit the line ($\omega = a + by$) to the dataset:
+\[ b = \frac {\sum(x_i -\overline{x})(\omega_i - \overline {\omega}) } {\sum(x_i - \overline{x})^2} \]
+\[ a = \overline {\omega} - b\overline{x} \]
+This is done in fitting.py using np.mean for the averages:
+\lstinputlisting[language=Python, firstline=42, lastline=55]{D:/Programming/CoronaPrediction/fitting.py}
+
+\newpage
+
+To convert the linear line ($\omega = a + bx$) back to an exponential we take $e$ to the power of $a$ for $N_0$, b can be left as is and taken as k
+\[N_0 = e^a \]
+\[k = b\]
+So we get the exponential curve:
+\[ N_{(t)} = e^{a + bt} \]
+
+\lstinputlisting[language=Python, firstline=31, lastline=34]{D:/Programming/CoronaPrediction/fitting.py}
+
+Where $t$ is the time between the first point in our sample dataset and the date we want to predict the cases for.
+
+\section {Data}
+The data used for the prediction comes from the official BAG website\footnote{\url{https://www.bag.admin.ch/bag/en/home/krankheiten/ausbrueche-epidemien-pandemien/aktuelle-ausbrueche-epidemien/novel-cov/situation-schweiz-und-international.html}}
+
+Then the excel sheet is converted to a .csv file and converted to a list:
+\lstinputlisting[language=Python, firstline=11, lastline=14]{D:/Programming/CoronaPrediction/main.py}
+
+For an easier source data selection, a \verb=generate_dates= function is implemented. Just give the starting date and the range.
+\lstinputlisting[language=Python, firstline=45, lastline=56]{D:/Programming/CoronaPrediction/main.py}
+\newpage
+And the daily cases extracted. For a more accurate dataset, only the weekdays are counted.
+\lstinputlisting[language=Python, firstline=24, lastline=37]{D:/Programming/CoronaPrediction/main.py}
+
+
+\section {Result}
+Based on the data from !!!! add range!!! the Modle predicts XXX cases for the 27. April 2021.
+On tests the modle was generally a bit above the true cases, so this is a rather pessimistic projection.
+The complete graph shows the projection where 0 is the !!!!!! Say what 0 is !!!!!, an interactive graph can be found here\footnote{\url{https://www.bag.admin.ch/bag/en/home/krankheiten/ausbrueche-epidemien-pandemien/aktuelle-ausbrueche-epidemien/novel-cov/situation-schweiz-und-international.html}}:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{cases}
+    \caption {The projection of the cases against time.}
+    \label{fig:Cases}
+\end{figure}
+
+
+The whole modle	 can be found on github
+	
+\end {document}
