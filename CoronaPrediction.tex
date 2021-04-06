@@ -7,12 +7,19 @@
 
 
 \title {Corona number Prediciton}
-\author {Benjamin Pionczewski}
+\author {Pionczewski, Benjamin \and Marxer, Elina}
 \date {\today {}}
+
 
 
 \begin {document}
 \maketitle
+\vspace {3cm}
+
+\tableofcontents
+
+\clearpage
+
 \section {Modle}
 
 The prediction is made by fitting an exponential curve ($N_{(t)} = N_0*e^{kt}$) to a dataset.
@@ -54,17 +61,17 @@ And the daily cases extracted. For a more accurate dataset, only the weekdays ar
 
 
 \section {Result}
-Based on the data from !!!! add range!!! the Modle predicts XXX cases for the 27. April 2021.
+Based on the data from the 15.02.2021 to the 31.03.2021, the modle predicts approximately \emph{3400} new cases for the 27. April 2021.
 On tests the modle was generally a bit above the true cases, so this is a rather pessimistic projection.
-The complete graph shows the projection where 0 is the !!!!!! Say what 0 is !!!!!, an interactive graph can be found here\footnote{\url{https://www.bag.admin.ch/bag/en/home/krankheiten/ausbrueche-epidemien-pandemien/aktuelle-ausbrueche-epidemien/novel-cov/situation-schweiz-und-international.html}}:
+The complete graph\footnote{An interactive version can be found here: \url{http://magicpio.internet-box.ch/case_graph.html}}: shows the projection from the first data point 15.02.2021 (0) to the 27.04.2021 (70).
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.5\textwidth]{cases}
+    \includegraphics[width=0.8\textwidth]{case_plot}
     \caption {The projection of the cases against time.}
     \label{fig:Cases}
 \end{figure}
 
 
-The whole modle	 can be found on github
+The whole modle is available be found on github \footnote{\url{https://github.com/Phoenix-64/CoronaPrediction}}
 	
 \end {document}

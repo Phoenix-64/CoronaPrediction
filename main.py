@@ -60,13 +60,13 @@ def generate_dates(starting, length):
 read = read_files("200325_Datengrundlage_Grafiken_COVID-19-Bericht.csv")
 
 # Generates dates which are used to generate the line
-data = generate_dates("15-02-2021", 43)
+data = generate_dates("15-02-2021", 46)
 
 # Gets cases for these dates and fits curve
 data = get_cases_raw(read, data)
 data = fitting.to_log(data)
 a, b = fitting.get_curve(data)
-n, k = fitting.curve_to_expo(a, b)
+n, k = fitting.line_to_expo(a, b)
 print(a, b)
 print(n, k)
 
